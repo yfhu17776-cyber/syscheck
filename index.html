@@ -1,156 +1,216 @@
-01.18 19:40
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MATRIX TERMINAL v19.0</title>
+    <title>矩阵至尊版 v19.0 - 全球管理终端</title>
     <style>
-        /* 工业级黑绿 UI 设定 */
-        :root { --main: #00ff41; --bg: #000; --warn: #ff3030; --gold: #ffd700; --card: #0a0a0a; }
+        /* 深度工业级黑绿风格 - 全局样式 */
+        :root { --main: #00ff41; --bg: #000; --warn: #ff3e3e; --gold: #ffd700; --card: #0a0a0a; --line: #1a1a1a; }
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Courier New', monospace; }
         body, html { width:100%; height:100%; background: var(--bg); color: var(--main); overflow-x: hidden; -webkit-user-select: none; }
 
-        /* A 面：系统登录入口 */
+        /* A 面：高保密登录界面 */
         #A-SIDE { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1000; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; }
-        .login-container { width:85%; max-width:400px; border:1px solid #1a1a1a; padding:40px 20px; text-align:center; background:var(--card); position:relative; }
-        .scan-line { width:100%; height:1px; background:var(--main); position:absolute; top:0; left:0; animation: scan 4s infinite linear; opacity: 0.1; }
+        .login-container { width:90%; max-width:420px; border:1px solid var(--line); padding:50px 25px; text-align:center; background:var(--card); position:relative; box-shadow:0 0 40px rgba(0,255,65,0.05); }
+        .scan-line { width:100%; height:2px; background:var(--main); position:absolute; top:0; left:0; animation: scan 5s infinite linear; opacity: 0.1; }
         @keyframes scan { 0% { top:0; } 100% { top:100%; } }
-        #GHOST-SHIELD { font-size:45px; margin-bottom:20px; cursor:default; opacity: 0.5; }
-        input { background:#000; border:1px solid #333; color:var(--main); padding:15px; width:100%; margin:20px 0 10px; outline:none; text-align:center; font-size:18px; border-radius:4px; }
-        .login-btn { background:transparent; border:1px solid var(--main); color:var(--main); padding:12px; cursor:pointer; width:100%; font-weight:bold; font-size:16px; }
-
-        /* B 面：矩阵核心管理后台 */
-        #B-SIDE { display:none; width:100%; height:100%; overflow-y:auto; padding:15px; position:relative; }
-        .header { display:flex; justify-content:space-between; border-bottom:1px solid #222; padding-bottom:10px; margin-bottom:20px; font-size:12px; }
-        .card { background:var(--card); border:1px solid #1a1a1a; padding:15px; margin-bottom:15px; border-radius:4px; }
         
-        /* 权限面板控制 */
+        /* 隐藏上帝入口：盾牌图标 */
+        #GHOST-SHIELD { font-size:50px; margin-bottom:25px; cursor:default; opacity: 0.4; transition: opacity 0.3s; }
+        #GHOST-SHIELD:active { opacity: 1; }
+        
+        .input-group { margin: 25px 0; position: relative; }
+        input { background:#000; border:1px solid #333; color:var(--main); padding:18px; width:100%; outline:none; text-align:center; font-size:20px; border-radius:4px; letter-spacing: 2px; }
+        input:focus { border-color: var(--main); }
+        
+        .login-btn { background:transparent; border:1px solid var(--main); color:var(--main); padding:15px; cursor:pointer; width:100%; font-weight:bold; font-size:16px; text-transform: uppercase; transition: 0.2s; }
+        .login-btn:active { background:var(--main); color:#000; }
+
+        /* B 面：全功能后台管理系统 */
+        #B-SIDE { display:none; width:100%; height:100%; overflow-y:auto; padding:20px; position:relative; }
+        .nav-header { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222; padding-bottom:15px; margin-bottom:25px; }
+        .status-tag { font-size:12px; padding:2px 8px; border:1px solid var(--main); border-radius:10px; }
+        
+        .card { background:var(--card); border:1px solid var(--line); padding:20px; margin-bottom:20px; border-radius:5px; position: relative; }
+        .card-title { font-size:14px; margin-bottom:15px; border-left:3px solid var(--main); padding-left:10px; font-weight: bold; }
+
+        /* 开发者专用：上帝模式面板 */
         .master-panel { border:1px solid var(--gold) !important; color:var(--gold); display:none; }
+        .master-panel .card-title { border-left-color: var(--gold); }
+        .master-btn { border:1px solid var(--gold); color:var(--gold); padding:8px; width:100%; background: transparent; font-size:12px; margin-top:10px; cursor: pointer; }
+
+        /* 老板专用：审计系统 */
         .boss-panel { display:none; }
+        .audit-logs { font-size:11px; height:120px; overflow-y:auto; background:#000; padding:12px; border:1px solid #111; color:#555; line-height: 1.8; }
+        .audit-logs span { color: #888; }
 
-        /* 素材系统：九宫格与文案 */
-        .grid-9 { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin:15px 0; }
-        .slot { aspect-ratio:1; background:#000; border:1px dashed #333; display:flex; align-items:center; justify-content:center; font-size:10px; color:#444; }
-        textarea { width:100%; background:#000; border:1px solid #222; color:var(--main); padding:10px; height:100px; margin-top:10px; resize:none; outline:none; }
+        /* 矩阵素材：九宫格引擎 */
+        .matrix-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin:15px 0; }
+        .grid-slot { aspect-ratio:1; background:#050505; border:1px dashed #222; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:10px; color:#444; }
+        .grid-slot svg { margin-bottom: 5px; opacity: 0.3; }
 
-        /* 审计日志系统 */
-        .log-box { font-size:11px; height:80px; overflow-y:auto; background:#000; padding:10px; border:1px solid #111; color:#555; }
+        /* 全局多语言配置 */
+        .lang-textarea { width:100%; background:#000; border:1px solid #222; color:var(--main); padding:15px; height:120px; margin-top:10px; resize:none; font-size:13px; line-height:1.5; outline:none; }
+        .lang-textarea:focus { border-color: #444; }
 
-        /* 远程自毁全屏覆盖 */
-        #KILL-SCREEN { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:#000; color:var(--warn); text-align:center; padding-top:45vh; font-size:22px; font-weight:bold; }
+        /* 远程熔断覆盖层 */
+        #KILL-SCREEN { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:#000; color:var(--warn); text-align:center; padding-top:40vh; }
+        .kill-msg { border: 2px solid var(--warn); display: inline-block; padding: 20px 40px; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
 <body oncontextmenu="return false">
 
-    <div id="KILL-SCREEN">⚠️ SYSTEM TERMINATED<br><span style="font-size:12px; font-weight:normal; color:#666;">Unauthorized environment or expired license.</span></div>
+    <div id="KILL-SCREEN">
+        <div class="kill-msg">
+            <h1 style="font-size:30px;">SYSTEM TERMINATED</h1>
+            <p style="margin-top:10px; font-size:14px;">SECURITY VIOLATION: LICENSE EXPIRED</p>
+        </div>
+    </div>
 
     <div id="A-SIDE">
         <div class="login-container">
             <div class="scan-line"></div>
             <div id="GHOST-SHIELD">🛡️</div>
-            <h3 style="letter-spacing: 2px;">矩阵授权系统</h3>
-            <p style="font-size:10px; color:#444; margin-top:5px;">SECURE ACCESS v19.0</p>
+            <h2 style="letter-spacing: 4px;">矩阵系统终端</h2>
+            <p style="font-size:11px; color:#333; margin-top:8px;">MATRIX GLOBAL SECURE v19.0.42</p>
             
-            <input type="password" id="PASS-INPUT" placeholder="请输入授权码">
-            <button class="login-btn" onclick="HandleLogin()">进入管理端</button>
+            <div class="input-group">
+                <input type="password" id="ENTRY-CODE" placeholder="输入访问密钥">
+            </div>
             
-            <p style="font-size:9px; color:#222; margin-top:30px;">Global Encryption Node Active</p>
+            <button class="login-btn" onclick="PerformLogin()">验证身份并进入</button>
+            
+            <div style="margin-top:40px; font-size:9px; color:#1a1a1a;">
+                NODE: HK-SERVER-04 | ENCRYPTION: AES-256-GCM
+            </div>
         </div>
     </div>
 
     <div id="B-SIDE">
-        <div class="header">
-            <div>STATUS: <span id="ROLE-TXT">PENDING</span></div>
-            <div onclick="location.reload()" style="color:var(--warn); cursor:pointer;">[EXIT]</div>
+        <div class="nav-header">
+            <div>ACCESS: <span id="ROLE-DISPLAY" class="status-tag">GUEST</span></div>
+            <div onclick="location.reload()" style="color:var(--warn); cursor:pointer; font-size:12px;">[ 退出系统 ]</div>
         </div>
 
-        <div id="MASTER-UI" class="card master-panel">
-            <h4 style="margin-bottom:8px;">上帝视角：穿透式监视模式</h4>
-            <p style="font-size:10px;">已绕过所有权限，此面板对老板和员工不可见。</p>
+        <div id="MASTER-PANEL" class="card master-panel">
+            <div class="card-title">上帝视角 (GOD MODE)</div>
+            <p style="font-size:11px;">你可以穿透监视老板的流水和下级代理。当前在线代理: 154。系统负载: 12.4%。</p>
+            <button class="master-btn" onclick="alert('正在提取全球节点快照...')">全局流量实时嗅探</button>
         </div>
 
-        <div id="BOSS-UI" class="card boss-panel">
-            <h4 style="margin-bottom:8px;">下级员工审计 (15 代理槽位)</h4>
-            <div class="log-box">
-                <div>[04:12:01] STAFF_003 正在分发素材...</div>
-                <div>[04:15:22] STAFF_007 修改了主文案...</div>
+        <div id="BOSS-PANEL" class="card boss-panel">
+            <div class="card-title">下级审计日志 (15 代理槽位)</div>
+            <div class="audit-logs" id="LOG-STREAM">
+                <div><span>[02:14:10]</span> 员工 STAFF_002 更新了九宫格图片</div>
+                <div><span>[02:18:05]</span> 员工 STAFF_009 批量产出了 500 条短链</div>
+                <div><span>[02:22:40]</span> 员工 STAFF_014 修改了主视频 B 面文案</div>
+                <div><span>[03:05:11]</span> 员工 STAFF_001 登录 IP: 182.16.4.11</div>
+                <div><span>[03:44:20]</span> 系统自动执行了全球副本同步...</div>
             </div>
         </div>
 
         <div class="card">
-            <h4>矩阵素材配置</h4>
-            <div class="grid-9">
-                <div class="slot">1</div><div class="slot">2</div><div class="slot">3</div>
-                <div class="slot">4</div><div class="slot">5</div><div class="slot">6</div>
-                <div class="slot">7</div><div class="slot">8</div><div class="slot">9</div>
+            <div class="card-title">矩阵素材配置引擎</div>
+            <p style="font-size:12px; color:#666;">九宫格视觉定位系统 (Visual Anchor):</p>
+            <div class="matrix-grid">
+                <div class="slot-wrap">
+                    <div class="grid-slot">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        1
+                    </div>
+                </div>
+                <div class="grid-slot">2</div><div class="grid-slot">3</div>
+                <div class="grid-slot">4</div><div class="grid-slot">5</div><div class="grid-slot">6</div>
+                <div class="grid-slot">7</div><div class="grid-slot">8</div><div class="grid-slot">9</div>
             </div>
-            <p style="font-size:12px;">全局推广文案 (12国语言):</p>
-            <textarea placeholder="输入你要分发的文案..."></textarea>
-            <button class="login-btn" style="margin-top:15px;">生成加密短链</button>
+
+            <p style="font-size:12px; color:#666; margin-top:20px;">12 国语言推广文案 (多语自适应):</p>
+            <textarea class="lang-textarea" placeholder="在这里输入你的推广文案，系统将自动适配全球流量节点..."></textarea>
+            
+            <button class="login-btn" style="margin-top:20px;" onclick="alert('链接已加密处理，已复制到剪贴板')">生成全球推广加密短链</button>
+        </div>
+
+        <div class="card" style="border-style: dashed; opacity: 0.5;">
+            <div class="card-title">系统 API 状态</div>
+            <p style="font-size:10px;">V3 接口: 正常 | 自动去重: 已开启 | 链路追踪: 运行中</p>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // 原始变量配置区 (待修改)
-        // ==========================================
-        const REMOTE_URL = "ORIGINAL_REMOTE_LINK"; // 远程自毁地址
-        const MASTER_PW  = "ORIGINAL_MASTER_KEY"; // 上帝密码
-        const BOSS_PW    = "ORIGINAL_BOSS_KEY";   // 老板授权码
-        // ==========================================
+        // ===================================================
+        // 核心原始配置区 - 请在 GitHub 上传后在此处修改
+        // ===================================================
+        const CONFIG_REMOTE_SWITCH = "REPLACE_WITH_YOUR_RAW_URL"; 
+        const CONFIG_MASTER_KEY     = "REPLACE_WITH_MASTER_KEY"; 
+        const CONFIG_BOSS_KEY       = "REPLACE_WITH_BOSS_KEY";   
+        // ===================================================
 
-        let clickCount = 0;
+        let hitCount = 0;
 
-        // 上帝模式激活 (点击盾牌 5 次)
-        document.getElementById('GHOST-SHIELD').onclick = () => {
-            clickCount++;
-            if(clickCount >= 5) {
-                let p = prompt("DEV_COMMAND:");
-                if(p === MASTER_PW) { ActivateB('GOD'); }
-                clickCount = 0;
+        // 1. 隐藏暗门触发 (Hidden Master Entrance)
+        document.getElementById('GHOST-SHIELD').onclick = function() {
+            hitCount++;
+            if(hitCount >= 5) {
+                let pass = prompt("DEV_CONSOLE_ACCESS:");
+                if(pass === CONFIG_MASTER_KEY) { 
+                    LaunchBackend('GOD'); 
+                }
+                hitCount = 0;
             }
         };
 
-        // 普通登录处理
-        function HandleLogin() {
-            let val = document.getElementById('PASS-INPUT').value;
-            if(val === BOSS_PW) {
-                ActivateB('BOSS');
+        // 2. 正常登录逻辑 (Standard Login)
+        function PerformLogin() {
+            let val = document.getElementById('ENTRY-CODE').value;
+            if(val === CONFIG_BOSS_KEY) {
+                LaunchBackend('BOSS');
             } else if(val.startsWith('STAFF')) {
-                ActivateB('STAFF');
-            } else {
-                alert('授权码验证失败');
+                LaunchBackend('STAFF');
+            } else if(val !== "") {
+                alert('ACCESS DENIED: INVALID KEY');
             }
         }
 
-        // 界面切换
-        function ActivateB(role) {
+        // 3. 界面渲染与权限隔离 (UI Rendering)
+        function LaunchBackend(role) {
             document.getElementById('A-SIDE').style.display = 'none';
             document.getElementById('B-SIDE').style.display = 'block';
-            document.getElementById('ROLE-TXT').innerText = role;
+            document.getElementById('ROLE-DISPLAY').innerText = role;
 
             if(role === 'GOD') {
-                document.getElementById('MASTER-UI').style.display = 'block';
-                document.getElementById('BOSS-UI').style.display = 'block';
+                document.getElementById('MASTER-PANEL').style.display = 'block';
+                document.getElementById('BOSS-PANEL').style.display = 'block';
+                document.getElementById('ROLE-DISPLAY').style.borderColor = '#ffd700';
+                document.getElementById('ROLE-DISPLAY').style.color = '#ffd700';
             } else if(role === 'BOSS') {
-                document.getElementById('BOSS-UI').style.display = 'block';
+                document.getElementById('BOSS-PANEL').style.display = 'block';
             }
         }
 
-        // 远程自毁检查逻辑 (每 15 秒同步一次)
-        async function KillSwitchCheck() {
+        // 4. 远程自毁熔断机制 (Remote Kill Switch)
+        async function HeartbeatMonitor() {
             try {
-                let r = await fetch(REMOTE_URL + "?t=" + Date.now());
+                // 加上时间戳防止浏览器缓存结果
+                let r = await fetch(CONFIG_REMOTE_SWITCH + "?t=" + new Date().getTime());
                 let s = await r.text();
                 if(s.trim() === "0") {
-                    document.body.innerHTML = "";
+                    // 执行自毁
+                    document.body.innerHTML = ""; 
                     document.getElementById('KILL-SCREEN').style.display = 'block';
                     document.body.appendChild(document.getElementById('KILL-SCREEN'));
+                    if(window.localStorage) { localStorage.clear(); }
                 }
-            } catch(e) {}
+            } catch(err) {
+                // 如果网络彻底断开，可选择是否锁死，此处保留运行
+                console.log("Link Active");
+            }
         }
-        setInterval(KillSwitchCheck, 15000); KillSwitchCheck();
+
+        // 每 15 秒强制核查一次
+        setInterval(HeartbeatMonitor, 15000);
+        HeartbeatMonitor(); // 初始化执行一次
     </script>
 </body>
 </html>

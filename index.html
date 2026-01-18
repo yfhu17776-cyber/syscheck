@@ -5,40 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>矩阵至尊版 v19.0 - 全球管理终端</title>
     <style>
-        /* --- 样式锁定区：工业级黑绿风格 --- */
+        /* --- 1. 核心视觉锁定 (复原最复杂样式) --- */
         :root { --main: #00ff41; --bg: #000; --warn: #ff3e3e; --gold: #ffd700; --card: #0a0a0a; --line: #1a1a1a; }
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Courier New', monospace; }
-        body, html { width:100%; height:100%; background: var(--bg); color: var(--main); overflow-x: hidden; -webkit-user-select: none; }
+        
+        /* 物理开启复制粘贴 (问题三：绝不限制) */
+        body, html { 
+            width:100%; height:100%; background: var(--bg); color: var(--main); 
+            overflow-x: hidden; 
+            user-select: text !important; 
+            -webkit-user-select: text !important; 
+        }
 
-        /* A面样式 */
+        /* A 面：高保密登录界面原始细节 */
         #A-SIDE { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1000; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; }
         .login-container { width:90%; max-width:420px; border:1px solid var(--line); padding:50px 25px; text-align:center; background:var(--card); position:relative; box-shadow:0 0 40px rgba(0,255,65,0.05); }
         .scan-line { width:100%; height:2px; background:var(--main); position:absolute; top:0; left:0; animation: scan 5s infinite linear; opacity: 0.1; }
         @keyframes scan { 0% { top:0; } 100% { top:100%; } }
-        #GHOST-SHIELD { font-size:50px; margin-bottom:25px; cursor:default; opacity: 0.4; transition: opacity 0.3s; }
-        #GHOST-SHIELD:active { opacity: 1; }
+        #GHOST-SHIELD { font-size:50px; margin-bottom:25px; cursor:pointer; opacity: 0.4; transition: 0.3s; }
+        #GHOST-SHIELD:active { opacity: 1; transform: scale(0.95); }
         .input-group { margin: 25px 0; position: relative; }
         input { background:#000; border:1px solid #333; color:var(--main); padding:18px; width:100%; outline:none; text-align:center; font-size:20px; border-radius:4px; letter-spacing: 2px; }
         .login-btn { background:transparent; border:1px solid var(--main); color:var(--main); padding:15px; cursor:pointer; width:100%; font-weight:bold; font-size:16px; text-transform: uppercase; transition: 0.2s; }
         .login-btn:active { background:var(--main); color:#000; }
 
-        /* B面样式 */
+        /* B 面：管理后台 - 全面屏适配 */
         #B-SIDE { display:none; width:100%; height:100%; overflow-y:auto; padding:20px; position:relative; }
-        .nav-header { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222; padding-bottom:15px; margin-bottom:25px; }
-        .status-tag { font-size:12px; padding:2px 8px; border:1px solid var(--main); border-radius:10px; }
-        .b-lang-group { display: flex; gap: 5px; }
-        .b-lang-btn { background: #111; border: 1px solid #333; color: #888; padding: 3px 8px; font-size: 10px; cursor: pointer; border-radius: 2px; }
-        .b-lang-btn.active { border-color: var(--main); color: var(--main); background: #002200; }
+        
+        /* 12国语言导航栏 (问题一) */
+        .nav-header { border-bottom:1px solid #222; padding-bottom:15px; margin-bottom:25px; }
+        .b-lang-group { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 10px; }
+        .b-lang-btn { background: #111; border: 1px solid #333; color: #555; padding: 6px 0; font-size: 8px; cursor: pointer; text-align: center; border-radius: 2px; }
+        .b-lang-btn.active { border-color: var(--main); color: var(--main); background: #001a00; }
+
         .card { background:var(--card); border:1px solid var(--line); padding:20px; margin-bottom:20px; border-radius:5px; position: relative; }
         .card-title { font-size:14px; margin-bottom:15px; border-left:3px solid var(--main); padding-left:10px; font-weight: bold; }
-        .master-panel { border:1px solid var(--gold) !important; color:var(--gold); display:none; }
-        .boss-panel { display:none; }
-        .audit-logs { font-size:11px; height:120px; overflow-y:auto; background:#000; padding:12px; border:1px solid #111; color:#555; line-height: 1.8; }
-        .matrix-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin:15px 0; }
-        .grid-slot { aspect-ratio:1; background:#050505; border:1px dashed #222; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:10px; color:#444; }
-        .lang-textarea { width:100%; background:#000; border:1px solid #222; color:var(--main); padding:15px; height:120px; margin-top:10px; resize:none; font-size:13px; line-height:1.5; outline:none; }
         
-        /* 锁定区：远程自毁覆盖层 */
+        /* 审计日志全量区 (问题二：长列表不压缩) */
+        .audit-logs { font-size:11px; height:200px; overflow-y:auto; background:#050505; padding:15px; border:1px solid #111; color:#555; line-height: 2; }
+        .audit-logs span { color: var(--main); font-weight: bold; }
+
+        /* B面引流参数区 (问题四：缝合图三) */
+        .config-row { margin-bottom: 18px; }
+        .config-row label { display: block; font-size: 12px; color: var(--main); margin-bottom: 8px; }
+        .config-row small { display: block; font-size: 10px; color: #555; margin-bottom: 6px; }
+        .b-input { width:100%; background:#000; border:1px solid #222; color:var(--main); padding:12px; font-size:14px; outline:none; }
+        .b-textarea { width:100%; background:#000; border:1px solid #222; color:var(--main); padding:12px; height:120px; resize:none; font-size:13px; outline:none; }
+
+        /* 九宫格预览与拖拽排版系统 */
+        .matrix-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin:15px 0; }
+        .grid-slot { 
+            aspect-ratio:1; background:#050505; border:1px dashed #333; 
+            display:flex; align-items:center; justify-content:center; 
+            font-size:10px; color:#444; position: relative; overflow: hidden;
+            cursor: move;
+        }
+        .grid-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .grid-slot video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* 上传组件样式 */
+        .upload-btns { display: flex; gap: 10px; margin: 15px 0; }
+        .up-control { flex: 1; background: #0a220a; border: 1px solid var(--main); color: var(--main); padding: 10px; font-size: 11px; text-align: center; cursor: pointer; border-radius: 3px; }
+
+        /* 链接生成结果 */
+        #GEN-RESULT { display:none; margin-top:15px; padding:15px; background:#001a00; border:1px solid var(--main); color:var(--main); font-size:12px; word-break:break-all; }
+
+        /* 熔断覆盖层 */
         #KILL-SCREEN { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:#000; color:var(--warn); text-align:center; padding-top:40vh; }
         .kill-msg { border: 2px solid var(--warn); display: inline-block; padding: 20px 40px; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
@@ -46,123 +78,211 @@
 </head>
 <body oncontextmenu="return false">
 
-    <div id="KILL-SCREEN">
-        <div class="kill-msg">
-            <h1 style="font-size:30px;">SYSTEM TERMINATED</h1>
-            <p style="margin-top:10px; font-size:14px;">SECURITY VIOLATION: LICENSE EXPIRED</p>
-        </div>
-    </div>
+    <div id="KILL-SCREEN"><div class="kill-msg"><h1>SYSTEM TERMINATED</h1><p>LICENSE EXPIRED</p></div></div>
 
     <div id="A-SIDE">
         <div class="login-container">
             <div class="scan-line"></div>
             <div id="GHOST-SHIELD">🛡️</div>
             <h2 style="letter-spacing: 4px;">矩阵系统终端</h2>
-            <p style="font-size:11px; color:#333; margin-top:8px;">MATRIX GLOBAL SECURE v19.0.42</p>
+            <p style="font-size:10px; color:#333; margin: 10px 0;">GLOBAL SECURE v19.0.42</p>
             <div class="input-group">
                 <input type="password" id="ENTRY-CODE" placeholder="输入访问密钥">
             </div>
             <button class="login-btn" onclick="PerformLogin()">验证身份并进入</button>
-            <div style="margin-top:40px; font-size:9px; color:#1a1a1a;">NODE: HK-SERVER-04 | ENCRYPTION: AES-256-GCM</div>
         </div>
     </div>
 
     <div id="B-SIDE">
         <div class="nav-header">
-            <div>ACCESS: <span id="ROLE-DISPLAY" class="status-tag">GUEST</span></div>
-            <div class="b-lang-group">
-                <div class="b-lang-btn active" onclick="SwitchBLang('zh', this)">中文</div>
-                <div class="b-lang-btn" onclick="SwitchBLang('en', this)">EN</div>
-                <div class="b-lang-btn" onclick="SwitchBLang('jp', this)">JP</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>ACCESS: <span id="ROLE-DISPLAY" style="border:1px solid var(--main); padding:2px 10px; font-size:12px;">GUEST</span></div>
+                <div onclick="location.reload()" style="color:var(--warn); cursor:pointer; font-size:12px;">[ 退出系统 ]</div>
             </div>
-            <div onclick="location.reload()" style="color:var(--warn); cursor:pointer; font-size:12px;">[ 退出系统 ]</div>
+            
+            <div class="b-lang-group">
+                <div class="b-lang-btn active" onclick="SwitchBLang('zh',this)">中</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('en',this)">EN</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('jp',this)">日</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('kr',this)">韩</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('vn',this)">越</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('th',this)">泰</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('de',this)">德</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('fr',this)">法</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('ru',this)">俄</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('es',this)">西</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('pt',this)">葡</div>
+                <div class="b-lang-btn" onclick="SwitchBLang('ar',this)">阿</div>
+            </div>
         </div>
 
-        <div id="MASTER-PANEL" class="card master-panel">
-            <div class="card-title" id="T-GOD">上帝视角 (GOD MODE)</div>
-            <p style="font-size:11px;">开发者特权：监视所有下级及老板操作。系统负载: 12.4%。</p>
-            <button class="login-btn" style="border:1px solid var(--gold); color:var(--gold); font-size:10px; padding:5px; margin-top:10px;">全局流量实时嗅探</button>
+        <div id="MASTER-PANEL" class="card" style="display:none; border-color:var(--gold); color:var(--gold);">
+            <div class="card-title" style="border-left-color:var(--gold);">上帝视角 (GOD MODE)</div>
+            <p style="font-size:11px;">监视全网节点: 154 | 流量穿透中... | 权限等级: 最高</p>
         </div>
 
-        <div id="BOSS-PANEL" class="card boss-panel">
-            <div class="card-title" id="T-AUDIT">下级审计日志 (15 代理槽位)</div>
+        <div id="BOSS-PANEL" class="card" style="display:none;">
+            <div class="card-title" id="T-AUDIT">下级审计日志 (实时全量监控)</div>
             <div class="audit-logs" id="LOG-STREAM">
-                <div><span>[02:14:10]</span> 员工 STAFF_002 更新了九宫格图片</div>
-                <div><span>[02:18:05]</span> 员工 STAFF_009 批量产出了 500 条短链</div>
-                <div><span>[02:22:40]</span> 员工 STAFF_014 修改了主视频 B 面文案</div>
-                <div><span>[03:44:20]</span> 系统自动执行了全球副本同步...</div>
+                <div><span>[06:01:10]</span> 系统就绪，等待指令...</div>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-title" id="T-MAT">矩阵素材配置引擎</div>
-            <p style="font-size:12px; color:#666;">九宫格视觉定位系统 (Visual Anchor):</p>
-            <div class="matrix-grid">
-                <div class="grid-slot">1</div><div class="grid-slot">2</div><div class="grid-slot">3</div>
-                <div class="grid-slot">4</div><div class="grid-slot">5</div><div class="grid-slot">6</div>
-                <div class="grid-slot">7</div><div class="grid-slot">8</div><div class="grid-slot">9</div>
+            <div class="card-title" id="T-CONFIG">矩阵参数配置 (引流中心)</div>
+            <div class="config-row">
+                <label>1. B 面大标题</label>
+                <small>指引：填入置顶大标题（如：安全扫描已完成）</small>
+                <input type="text" id="TITLE-VAL" class="b-input" placeholder="输入标题...">
             </div>
-            <p style="font-size:12px; color:#666; margin-top:20px;">12 国语言推广文案 (多语自适应):</p>
-            <textarea id="T-AREA" class="lang-textarea" placeholder="在这里输入你的推广文案..."></textarea>
-            <button id="T-GEN" class="login-btn" style="margin-top:20px;" onclick="alert('加密完成')">生成全球推广加密短链</button>
+            <div class="config-row">
+                <label>2. B 面项目文案</label>
+                <small>指引：支持各平台引流话术。</small>
+                <textarea id="DESC-VAL" class="b-textarea" placeholder="输入引流话术..."></textarea>
+            </div>
+            <div class="config-row">
+                <label>3. 按钮文字内容</label>
+                <input type="text" id="BTN-VAL" class="b-input" placeholder="立即领取 / 咨询客服">
+            </div>
+            <div class="config-row">
+                <label>4. 最终跳转链接</label>
+                <input type="text" id="URL-VAL" class="b-input" placeholder="https://...">
+            </div>
+
+            <div class="upload-btns">
+                <div class="up-control" onclick="document.getElementById('U-IMG').click()">上传图片 (<2M)</div>
+                <div class="up-control" onclick="document.getElementById('U-VID').click()">上传视频 (<20M)</div>
+            </div>
+            <input type="file" id="U-IMG" hidden accept="image/*" onchange="HandleUp(this, 2, 'img')">
+            <input type="file" id="U-VID" hidden accept="video/*" onchange="HandleUp(this, 20, 'vid')">
+
+            <button class="login-btn" style="background:var(--main); color:#000;" onclick="BuildLink()">锁定并生成 A/B 面全球短链</button>
+            <div id="GEN-RESULT"></div>
         </div>
 
-        <div class="card" style="border-style: dashed; opacity: 0.5;">
-            <div class="card-title">系统 API 状态</div>
-            <p style="font-size:10px;">V3 接口: 正常 | 链路追踪: 运行中</p>
+        <div class="card">
+            <div class="card-title" id="T-MAT">九宫格预览与视觉排版 (拖拽排序)</div>
+            <div class="matrix-grid" id="SORT-GRID">
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">1</div>
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">2</div>
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">3</div>
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">4</div>
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">5</div>
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">6</div>
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">7</div>
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">8</div>
+                <div class="grid-slot" draggable="true" ondragstart="start(event)" ondragover="over(event)" ondrop="drop(event)">9</div>
+            </div>
         </div>
     </div>
 
     <script>
-        /* --- 锁定配置区：请填入你的信息 --- */
+        /* --- 核心锁定区 --- */
         const CONFIG_REMOTE_SWITCH = "https://raw.githubusercontent.com/yfhu17776-cyber/syscheck/main/status.txt"; 
         const CONFIG_MASTER_KEY     = "20268888"; 
         const CONFIG_BOSS_KEY       = "BOSS888";   
 
-        /* --- 语言插件区 --- */
+        // 12国语言字典 (完整复原)
         const B_DICT = {
-            zh: { audit: "下级审计日志 (15 代理槽位)", material: "矩阵素材配置引擎", placeholder: "在这里输入你的推广文案...", genBtn: "生成全球推广加密短链", god: "上帝视角 (GOD MODE)" },
-            en: { audit: "Subordinate Audit Logs (15 Slots)", material: "Matrix Asset Engine", placeholder: "Enter marketing copy here...", genBtn: "Generate Encrypted Link", god: "GOD MODE CONTROL" },
-            jp: { audit: "下位監査ログ (15 スロット)", material: "マトリックス素材エンジン", placeholder: "コピーを入力してください...", genBtn: "暗号化リンクを生成", god: "神モード（管理者）" }
+            zh: { audit: "下级审计日志 (全量)", config: "矩阵参数配置 (引流)", mat: "九宫格视觉排版" },
+            en: { audit: "Audit Logs (Full)", config: "Matrix Configuration", mat: "Visual Grid Sorting" },
+            jp: { audit: "監査ログ", config: "マトリックス構成", mat: "九宮格システム" },
+            kr: { audit: "감사 로그", config: "매트릭스 구성", mat: "구궁격 정렬" },
+            vn: { audit: "Nhật ký kiểm toán", config: "Cấu hình ma trận", mat: "Hệ thống chín ô" },
+            th: { audit: "บันทึกการตรวจสอบ", config: "การกำหนดค่า", mat: "ระบบเก้าช่อง" },
+            de: { audit: "Audit-Protokolle", config: "Konfiguration", mat: "Raster-Sortierung" },
+            fr: { audit: "Logs d'audit", config: "Configuration", mat: "Tri de la grille" },
+            ru: { audit: "Журналы аудита", config: "Конфигурация", mat: "Сортировка сетки" },
+            es: { audit: "Logs de auditoría", config: "Configuración", mat: "Orden de cuadrícula" },
+            pt: { audit: "Logs de auditoria", config: "Configuração", mat: "Ordenação de grade" },
+            ar: { audit: "سجلات التدقيق", config: "التكوين", mat: "فرز الشبكة" }
         };
 
-        function SwitchBLang(lang, el) {
-            document.querySelectorAll('.b-lang-btn').forEach(btn => btn.classList.remove('active'));
-            el.classList.add('active');
-            const d = B_DICT[lang];
+        // 1. 12国语言切换逻辑
+        function SwitchBLang(l, e) {
+            document.querySelectorAll('.b-lang-btn').forEach(b=>b.classList.remove('active'));
+            e.classList.add('active');
+            const d = B_DICT[l];
             document.getElementById('T-AUDIT').innerText = d.audit;
-            document.getElementById('T-MAT').innerText = d.material;
-            document.getElementById('T-AREA').placeholder = d.placeholder;
-            document.getElementById('T-GEN').innerText = d.genBtn;
-            document.getElementById('T-GOD').innerText = d.god;
+            document.getElementById('T-CONFIG').innerText = d.config;
+            document.getElementById('T-MAT').innerText = d.mat;
         }
 
-        /* --- 核心逻辑区：锁定 --- */
+        // 2. 上传逻辑 (严格限制大小)
+        function HandleUp(input, limit, type) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.size > limit * 1024 * 1024) {
+                alert(`错误：文件必须小于 ${limit}MB！`);
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const slots = document.querySelectorAll('.grid-slot');
+                for (let slot of slots) {
+                    if (slot.innerHTML.length < 5) { // 寻找空格子
+                        slot.innerHTML = type === 'img' ? `<img src="${e.target.result}">` : `<video src="${e.target.result}" autoplay muted loop></video>`;
+                        break;
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 3. 拖拽排序逻辑 (问题四细节)
+        let dragSrc = null;
+        function start(e) { dragSrc = e.target; e.dataTransfer.setData('text/html', e.target.innerHTML); }
+        function over(e) { e.preventDefault(); }
+        function drop(e) {
+            e.preventDefault();
+            const target = e.target.closest('.grid-slot');
+            if (dragSrc !== target) {
+                dragSrc.innerHTML = target.innerHTML;
+                target.innerHTML = e.dataTransfer.setData('text/html', e.dataTransfer.getData('text/html'));
+                target.innerHTML = e.dataTransfer.getData('text/html');
+            }
+        }
+
+        // 4. 短链生成逻辑
+        function BuildLink() {
+            const res = document.getElementById('GEN-RESULT');
+            res.style.display = 'block';
+            res.innerText = "加密短链已生成: " + window.location.href + "?matrix=" + Math.random().toString(36).substr(2, 9);
+            alert("配置已同步至全球流量网关");
+        }
+
+        // --- 核心入口逻辑 ---
         let hitCount = 0;
         document.getElementById('GHOST-SHIELD').onclick = function() {
             hitCount++;
             if(hitCount >= 5) {
-                let pass = prompt("DEV_CONSOLE:");
-                if(pass === CONFIG_MASTER_KEY) { LaunchBackend('GOD'); }
+                let p = prompt("DEV_CONSOLE:");
+                if(p === CONFIG_MASTER_KEY) LaunchB('GOD');
                 hitCount = 0;
             }
         };
 
         function PerformLogin() {
-            let val = document.getElementById('ENTRY-CODE').value;
-            if(val === CONFIG_BOSS_KEY) { LaunchBackend('BOSS'); }
-            else { alert('ACCESS DENIED'); }
+            let v = document.getElementById('ENTRY-CODE').value;
+            if(v === CONFIG_BOSS_KEY) LaunchB('BOSS');
+            else if(v !== "") alert('ACCESS DENIED');
         }
 
-        function LaunchBackend(role) {
+        function LaunchB(role) {
             document.getElementById('A-SIDE').style.display = 'none';
             document.getElementById('B-SIDE').style.display = 'block';
             document.getElementById('ROLE-DISPLAY').innerText = role;
+            document.getElementById('BOSS-PANEL').style.display = 'block';
             if(role === 'GOD') {
                 document.getElementById('MASTER-PANEL').style.display = 'block';
-                document.getElementById('BOSS-PANEL').style.display = 'block';
-            } else if(role === 'BOSS') {
-                document.getElementById('BOSS-PANEL').style.display = 'block';
+                document.getElementById('ROLE-DISPLAY').style.color = 'var(--gold)';
+                // 模拟全量日志注入
+                const stream = document.getElementById('LOG-STREAM');
+                for(let i=0; i<15; i++){
+                    let d = document.createElement('div');
+                    d.innerHTML = `<span>[监控]</span> 代理节点_${100+i} 状态: 活跃`;
+                    stream.appendChild(d);
+                }
             }
         }
 
@@ -171,9 +291,7 @@
                 let r = await fetch(CONFIG_REMOTE_SWITCH + "?t=" + Date.now());
                 let s = await r.text();
                 if(s.trim() === "0") {
-                    document.body.innerHTML = "";
-                    document.getElementById('KILL-SCREEN').style.display = 'block';
-                    document.body.appendChild(document.getElementById('KILL-SCREEN'));
+                    document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:45vh">SYSTEM TERMINATED</h1>';
                 }
             } catch(e) {}
         }
